@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<script src="../js/typebot.js" type="text/javascript"></script>
+	<script src="typebot.min.js" type="text/javascript"></script>
 	<style>
 		body{
 			background:#eee;
@@ -96,97 +96,119 @@
 </head>
 <body>
 	<h1 class="heading">Typebot.js</h1>
-	<div class="typebot">
+	<p>Click on the boxes to start the typing!</p>
+	<div class="typebot tb">
 		<h1>Normal</h1>
 		<div id="normal"></div>
 	</div>
-	<div class="typebot">
+	<div class="typebot tb">
 		<h1>Blinker</h1>
 		<div id="blinker"></div>
 	</div>
-	<div class="typebot">
+	<div class="typebot tb">
 		<h1>Multiline</h1>
 		<div id="multi-line"></div>
 	</div>
-	<div class="typebot">
+	<div class="typebot tb">
 		<h1>On done</h1>
 		<div id="on-done"></div>
 	</div>
-	<div class="typebot">
-		<h1>On Layer done</h1>
+	<div class="typebot tb">
+		<h1>On Layer End</h1>
 		<div id="on-layer-done"></div>
 	</div>
-	<div class="typebot">
+	<div class="typebot tb">
 		<h1>whileTyping</h1>
 		<div id="while-typing"></div>
 	</div>
-	<div class="typebot ps">
+	<div class="typebot ps tb">
 		<h1>Pause - Start</h1>
 		<div id="pause-start"></div>
 	</div>
-	<div class="typebot dest">
-		<h1>Destroy</h1>
-		<div id="destroy"></div>
+	<div class="typebot tb">
+		<h1>on Layer Start</h1>
+		<div id="on-layer-start"></div>
 	</div>
-	<div class="console">
+	<div class="console tb">
 		<div id="console"></div>
 	</div>
 	<script>
-		new typebot("#normal",100,100,["This is a normal text"]);
 
-		new typebot("#blinker",100,100,["This is a normal text with blinker"],true);
+	var typeBots = [];
 
-		new typebot("#multi-line",100,100,["This is first line","This is second line","And this is third line"]);
+	typeBots.push(new typebot("#normal",100,100,["This is a normal text"],false,true));
 
-		new typebot("#on-done",100,100,["This is a normal text that changes color once it is done typing"]).done(function(){
-			this.activeElement.style.color = "green";
-		});
+	typeBots.push(new typebot("#blinker",100,100,["This is a normal text with blinker"],true,true));
 
-		new typebot("#on-layer-done",100,100,["This is a multiline text","It changes its color at the end of each layer"]).onLayerDone(function(){
-			var r = Math.round(Math.random() * 250);
-			var g = Math.round(Math.random() * 250);
-			var b = Math.round(Math.random() * 250);
-			this.activeElement.style.color = "rgb("+r+","+g+","+b+")";
-		});
+	typeBots.push(new typebot("#multi-line",100,100,["This is first line","This is second line","And this is third line"],false,true));
 
-		new typebot("#while-typing",100,100,["The letters have different colors!!!"]).whileTyping(function(){
-			var r = Math.round(Math.random() * 250);
-			var g = Math.round(Math.random() * 250);
-			var b = Math.round(Math.random() * 250);
-			this.letter.style.color = "rgb("+r+","+g+","+b+")";
-		});
+	
+	var ondone = new typebot("#on-done",100,100,["This is a normal text that changes color once it is done typing"],false,true)
+	ondone.done(function(){
+		this.activeElement.style.color = "green";
+	});
+	typeBots.push(ondone);
 
-		var pauseStart = new typebot("#pause-start",100,100,["Click to toggle pause-start"]);
-		var cl = 0;
-		document.getElementsByClassName("ps")[0].onclick = function(){ 
-			if(cl == 0){
-				pauseStart.pause();
-				cl = 1;
-			}else{
-				pauseStart.start();
-				cl = 0;
-			}
-		}
+	var onLayerEnd =new typebot("#on-layer-done",100,100,["This is a multiline text","It changes its color at the end of each layer"],false,true);
+	onLayerEnd.onLayerEnd(function(){
+		var r = Math.round(Math.random() * 250);
+		var g = Math.round(Math.random() * 250);
+		var b = Math.round(Math.random() * 250);
+		this.activeElement.style.color = "rgb("+r+","+g+","+b+")";
+	});
+	typeBots.push(onLayerEnd);
 
-		var destroy = new typebot("#destroy",100,100,["Click to pause and destroy me"]);
-		var cl = 0;
-		document.getElementsByClassName("dest")[0].onclick = function(){
-			destroy.destroy();
-		}
+	var whiletyping = new typebot("#while-typing",100,100,["The letters have different colors!!!"],false,true);
+	whiletyping.whileTyping(function(){
+		var r = Math.round(Math.random() * 250);
+		var g = Math.round(Math.random() * 250);
+		var b = Math.round(Math.random() * 250);
+		this.letter.style.color = "rgb("+r+","+g+","+b+")";
+	});
+	typeBots.push(whiletyping);
 
-		var lineCount = 1;
-		var _console = new typebot("#console",100,100,["Console like typing","This has blinker and line numbers"],true);
-		_console.onLayerDone(function(){
-			this.blinker.style.visibility = "hidden";
-			lineCount++;
-		});
-		_console.onstart(function(){
-			var line = document.createElement("span");
-			line.className = "line-count";
-			line.innerHTML = lineCount+":";
-			this.activeElement.insertBefore(line,this.activeElement.firstChild);
-		})
+	var pauseStart = new typebot("#pause-start",100,100,["Mouseenter to start, Mouseleave to pause"],false,true);
+	var cl = 0;
 
+	var ps = document.getElementsByClassName("ps")[0];
+	ps.onmouseenter = function(){ 
+		pauseStart.start();
+	}
+	ps.onmouseleave = function(){
+		pauseStart.pause();
+	}
+	typeBots.push(pauseStart);
+
+	var onLayerStart = new typebot("#on-layer-start",100,100,["This has different color","at the beginning itself"],false,true).onLayerStart(function(){
+		var r = Math.round(Math.random() * 250);
+		var g = Math.round(Math.random() * 250);
+		var b = Math.round(Math.random() * 250);
+		this.activeElement.style.color = "rgb("+r+","+g+","+b+")";
+	});
+	typeBots.push(onLayerStart);
+
+	var lineCount = 1;
+	var _console = new typebot("#console",100,100,["Console like typing","This has blinker and line numbers"],true,true);
+	_console.onLayerEnd(function(){
+		this.blinker.style.visibility = "hidden";
+		lineCount++;
+	});
+	_console.onLayerStart(function(){
+		var line = document.createElement("span");
+		line.className = "line-count";
+		line.innerHTML = lineCount+":";
+		this.activeElement.insertBefore(line,this.activeElement.firstChild);
+	})
+	typeBots.push(_console);
+	var tb = document.querySelectorAll(".tb");
+
+	for(var x=0;x<typeBots.length;x++){
+		(function(index){
+		    tb[index].onclick = function(){
+		        typeBots[index].start();
+		    }    
+		})(x);
+	}
 	</script>
 </body>
 </html>
