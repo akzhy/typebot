@@ -1,4 +1,4 @@
-typebot = function(e, s, d, t,b) {
+typebot = function(e, s, d, t,b,p) {
   var _this = this;
   this.eI = 0;
   this.speed = s;
@@ -10,14 +10,19 @@ typebot = function(e, s, d, t,b) {
   this.c_t = [];
   this.c_b = [];
   this.t = t;
-  this.paused = false;
-  this.done = function(f){_this.doneF = f;}
-  this.onLayerDone = function(f){_this.onLayerDoneF = f;}
-  this.whileTyping = function(f){_this.whileTypingF = f;}
-  this.onstart = function(f){_this.called = true;_this.onstartF = f;loop();}
+  this.onLayerStartCalled = false;
+  if(p != undefined){
+    this.paused = p;
+  }else{
+    this.paused = false;
+  }
+  this.done = function(f){_this.doneF = f;return _this}
+  this.onLayerEnd = function(f){_this.onLayerEndF = f;return _this}
+  this.whileTyping = function(f){_this.whileTypingF = f;return _this}
+  this.onLayerStart = function(f){_this.onLayerStartF = f;return _this}
   function loop() {
     _this.p.push(document.createElement("div"));
-    _this.p[_this.lpc].className = "typebot-container";
+    _this.p[_this.lpc].className = "typebot-layer";
     _this.c_t.push(document.createElement("span"));
     _this.c_t[_this.lpc].className = "typebot-element";
     _this.c_b.push(document.createElement("span"));
@@ -34,31 +39,35 @@ typebot = function(e, s, d, t,b) {
     _this.elements = _this.p;
     _this.blinker = _this.c_b[_this.lpc];
     _this.activeElement = _this.p[_this.lpc];  
-    if("onstartF" in _this){
-      _this.onstartF();
-    }
     _this.infn = function() {
+      if(!_this.onLayerStartCalled){
+        if("onLayerStartF" in _this){
+          _this.onLayerStartF();
+        }
+        _this.onLayerStartCalled = true;
+      }
       if(!_this.paused){
         _this.c_t[_this.lpc].innerHTML += "<span class='typebot-letter'>"+_this.t[_this.eI][_this.z]+"</span>";   
         _this.cl_len = _this.c_t[_this.lpc].childNodes.length; 
-        _this.letter = _this.c_t[_this.lpc].childNodes[_this.cl_len-1];                                      
+        _this.letter = _this.c_t[_this.lpc].childNodes[_this.cl_len-1];       
         if (_this.z >= _this.t[_this.eI].length-1) {
           if(_this.z == _this.t[_this.eI].length-1){
-            if("onLayerDoneF" in _this){
-              _this.onLayerDoneF();
+            if("onLayerEndF" in _this){
+              _this.onLayerEndF();
             }
           }
-          clearInterval(_this.interval);
           _this.eI = _this.eI + 1;
           if (_this.eI + 1 <= t.length) {
             _this.z = 0;
             _this.lpc+=1;
             setTimeout(loop,d);
+            _this.onLayerStartCalled = false;
           }else{
             if("doneF" in _this){
               _this.doneF();
             }
           }
+          clearInterval(_this.interval);
         } else {
           _this.z = _this.z + 1;
         }
@@ -69,10 +78,8 @@ typebot = function(e, s, d, t,b) {
     }
     _this.interval = setInterval(_this.infn, s);
   }
-  if(!this.called){
-     loop();
-  }
-  this.pause = function(){_this.paused = true;}
-  this.start = function(){_this.paused = false;}
-  this.destroy = function(){clearInterval(_this.interval);}
+  loop();
+  this.pause = function(){_this.paused = true;return _this}
+  this.start = function(){_this.paused = false;return _this}
+  this.destroy = function(){clearInterval(_this.interval);return _this}
 }
