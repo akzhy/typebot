@@ -203,6 +203,7 @@
 	var tb = document.querySelectorAll(".tb");
 
 	for(var x=0;x<typeBots.length;x++){
+		typeBots[x].init();
 		(function(index){
 		    tb[index].onclick = function(){
 		        typeBots[index].start();
