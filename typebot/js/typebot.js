@@ -78,7 +78,7 @@ typebot = function(e, s, d, t,b,p) {
     }
     _this.interval = setInterval(_this.infn, s);
   }
-  loop();
+  this.init = function(){loop();}
   this.pause = function(){_this.paused = true;return _this}
   this.start = function(){_this.paused = false;return _this}
   this.destroy = function(){clearInterval(_this.interval);return _this}
