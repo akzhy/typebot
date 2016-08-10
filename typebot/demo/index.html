@@ -1,213 +1,207 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<script src="typebot.min.js" type="text/javascript"></script>
+	<script src="../js/typebot.min.js" type="text/javascript"></script>
 	<style>
-		body{
-			background:#eee;
-			text-align:center;
-		}
-
-		.typebot{
-			width:400px;
-			height:250px;
-			box-shadow:1px 1px 6px -2px #000;
-			margin:10px;
-			display:inline-block;
-			vertical-align:top;
-			padding:3px 5px;
-			background:#fff;
-			text-align:left;
-		}
-
-		.typebot h1{
-			padding:0;
+		*{
 			margin:0;
+			padding:0;
+		}
+		body{
+			background:url("bg.jpg"); /* The image is from http://www.walldevil.com/wallpapers/a52/railroad-rail-desert.jpg */
 			text-align:center;
-		}
-
-		h1{
-			text-shadow:.5px .5px 1px rgba(0,0,0,.2);
-			color:rgba(73,73,73,1);
-		}
-
-		.heading{
-			font-size:48px;
-			color:rgba(0,0,0,.85);
-			text-align:center;
-		}
-
-		.console{
-			width:80%;
-			height:200px;
-			margin:0 auto;
-			padding:2%;
-			background:#000;
-			border:5px solid rgba(164,164,164,1);
-		}
-
-		#console{
+			background-size:cover;
+			font-family:tahoma;
 			color:#fff;
-			text-align:left;
-			font-family:"courier new";
-			font-size:20px;
-			color:lime;
-		}
-
-		#console .typebot-blinker{
-			animation:blink2 .5s infinite;
 			font-weight:bold;
-			color:red;
 		}
-
-		#console .line-count{
-			margin:0 10px;
-			color:red;
+		#type{
+			transition:transform 1s ease-in 0s,opacity 1s ease-in 0s;
+			margin-top:10em;
 		}
-		#blinker .typebot-blinker{
-			animation:blink 1s infinite;
-			color:black;
+		#type.done{
+			transform-origin:0 0;
+			transform:rotate(-180deg) scale(0,0);
+			opacity:0;
 		}
-
-		@keyframes blink{
-			0%{
-				color:transparent;
-			}
-			50%{
-				color:black;
-			}
+		#type .title{
+			font-size:10em;
+		}
+		#type .sub-title{
+			font-size:6em;
+		}
+		#type .sub-sub-title{
+			font-size:4em;
+			color:#f44336;
+		}
+		#type .cool{
+			font-size:6em;
+			display:inline-block;
+			position:relative;
+		}
+		#type .cool:after{
+			position:absolute;
+			top:0;
+			left:0;
+			content:"Cool things";
+			width:0;
+			color:#00CCFF;
+			transition:width 1s;
+			overflow:hidden;
+			white-space:nowrap;
+		}
+		#type .cool.done:after{
+			width:100%;
+		}
+		#type .fun{
+			font-size:6em;
+			transform-origin:0 0;
+			display:inline-block;
+		}
+		#type .fun.done{
+			animation:rot 1s cubic-bezier(0.99,-0.48, 0, 1.74) forwards;
+		}
+		@keyframes rot{
 			100%{
-				color:transparent;
+				transform:rotate(25deg);
 			}
 		}
+		#lyric{
+			margin-top:2em;
+			font-size:4em;
+			transform-origin:0 0;
+			transform:rotate(-180deg) scale(0,0);
+			opacity:0;
+			transition:transform .5s linear,opacity .5s linear;
+		}
+		#lyric.start{
+			transform:rotate(0deg) scale(1,1);
+			opacity:1;
+		}
+		#lyric .typebot-layer{
+			transition:opacity .5s linear,height 0s linear .5s;
+		}
 
-		@keyframes blink2{
-			0%{
-				color:transparent;
-			}
-			50%{
-				color:red;
-			}
-			100%{
-				color:transparent;
-			}
+		#lyric .typebot-layer.done{
+			opacity:0;
+			height:0;
+		}
+		#lyric .warn{
+			color:#f44336;
+			font-size:.8em;
+			transition:opacity .5s linear;
+		}
+		.hidden{
+			display:none;
+		}
+		.opacity{
+			opacity:0;
 		}
 	</style>
 </head>
-<body>
-	<h1 class="heading">Typebot.js</h1>
-	<p>Click on the boxes to start the typing!</p>
-	<div class="typebot tb">
-		<h1>Normal</h1>
-		<div id="normal"></div>
-	</div>
-	<div class="typebot tb">
-		<h1>Blinker</h1>
-		<div id="blinker"></div>
-	</div>
-	<div class="typebot tb">
-		<h1>Multiline</h1>
-		<div id="multi-line"></div>
-	</div>
-	<div class="typebot tb">
-		<h1>On done</h1>
-		<div id="on-done"></div>
-	</div>
-	<div class="typebot tb">
-		<h1>On Layer End</h1>
-		<div id="on-layer-done"></div>
-	</div>
-	<div class="typebot tb">
-		<h1>whileTyping</h1>
-		<div id="while-typing"></div>
-	</div>
-	<div class="typebot ps tb">
-		<h1>Pause - Start</h1>
-		<div id="pause-start"></div>
-	</div>
-	<div class="typebot tb">
-		<h1>on Layer Start</h1>
-		<div id="on-layer-start"></div>
-	</div>
-	<div class="console tb">
-		<div id="console"></div>
+<body style="font-size:1em;">
+	<div id="type"></div>
+	<div id="lyric" class="hidden">
+		<p class="warn">
+			BEFORE you play the audio:</br>
+			Make sure that the audio is fully loaded,Don't fast-forward the audio,Don't switch between your browser tabs
+		</p>
+		</p>
+		<div>
+			<p class="song">Coldplay - Yellow</p>
+			<audio id="audio" controls>
+				<source src="yellow.mp3" type="audio/mpeg">
+			</audio>
+		</div>
+		<div id="write"></div>
 	</div>
 	<script>
 
-	var typeBots = [];
-
-	typeBots.push(new typebot("#normal",100,100,["This is a normal text"],false,true));
-
-	typeBots.push(new typebot("#blinker",100,100,["This is a normal text with blinker"],true,true));
-
-	typeBots.push(new typebot("#multi-line",100,100,["This is first line","This is second line","And this is third line"],false,true));
-
-	
-	var ondone = new typebot("#on-done",100,100,["This is a normal text that changes color once it is done typing"],false,true)
-	ondone.done(function(){
-		this.activeElement.style.color = "green";
-	});
-	typeBots.push(ondone);
-
-	var onLayerEnd =new typebot("#on-layer-done",100,100,["This is a multiline text","It changes its color at the end of each layer"],false,true);
-	onLayerEnd.onLayerEnd(function(){
-		var r = Math.round(Math.random() * 250);
-		var g = Math.round(Math.random() * 250);
-		var b = Math.round(Math.random() * 250);
-		this.activeElement.style.color = "rgb("+r+","+g+","+b+")";
-	});
-	typeBots.push(onLayerEnd);
-
-	var whiletyping = new typebot("#while-typing",100,100,["The letters have different colors!!!"],false,true);
-	whiletyping.whileTyping(function(){
-		var r = Math.round(Math.random() * 250);
-		var g = Math.round(Math.random() * 250);
-		var b = Math.round(Math.random() * 250);
-		this.letter.style.color = "rgb("+r+","+g+","+b+")";
-	});
-	typeBots.push(whiletyping);
-
-	var pauseStart = new typebot("#pause-start",100,100,["Mouseenter to start, Mouseleave to pause"],false,true);
-	var cl = 0;
-
-	var ps = document.getElementsByClassName("ps")[0];
-	ps.onmouseenter = function(){ 
-		pauseStart.start();
+	var r = 0.052;
+	var em = r * window.innerWidth / 100;
+	document.body.style.fontSize = em+"em";
+	window.onresize = function(){
+		var em = r * window.innerWidth / 100;
+		document.body.style.fontSize = em+"em";	
 	}
-	ps.onmouseleave = function(){
-		pauseStart.pause();
-	}
-	typeBots.push(pauseStart);
-
-	var onLayerStart = new typebot("#on-layer-start",100,100,["This has different color","at the beginning itself"],false,true).onLayerStart(function(){
-		var r = Math.round(Math.random() * 250);
-		var g = Math.round(Math.random() * 250);
-		var b = Math.round(Math.random() * 250);
-		this.activeElement.style.color = "rgb("+r+","+g+","+b+")";
-	});
-	typeBots.push(onLayerStart);
-
-	var lineCount = 1;
-	var _console = new typebot("#console",100,100,["Console like typing","This has blinker and line numbers"],true,true);
-	_console.onLayerEnd(function(){
-		this.blinker.style.visibility = "hidden";
-		lineCount++;
-	});
-	_console.onLayerStart(function(){
-		var line = document.createElement("span");
-		line.className = "line-count";
-		line.innerHTML = lineCount+":";
-		this.activeElement.insertBefore(line,this.activeElement.firstChild);
+	var intro = new typebot("#type",100,50,[
+		{element:"h1",text:"TYPEBOT V2",class:"title"},
+		{element:"h2",class:"sub-title",text:"It's Better and Easier"},
+		{element:"h3",class:"sub-sub-title",text:"You can do lot of things with it!!"},
+		{element:"p",class:"cool",text:"Cool things",done:function(){this.activeChild.className+=" done";}},
+		{element:"p",class:"fun",text:"And More!!",done:function(){this.activeElement.className+=" done";this.activeChild.className+=" done";}}
+		]).init().done(function(){
+			setTimeout(function(){
+				document.getElementById("type").className+=" done";
+				setTimeout(function(){
+					document.getElementById("type").className+=" hidden";
+				},1000)
+				setTimeout(function(){
+					document.getElementById("lyric").className= "start";
+				},1000);
+			},2000)
+		})
+	var lyric = new typebot("#write",500,1200,[
+	{element:"p",text:"Look at the stars,",start:33000,end:35000},
+	{element:"p",text:"Look how they shine for you,",start:36000,end:39500},
+	{element:"p",text:"And everything you do,",start:42000,end:44500},
+	{element:"p",text:"Yeah, they were all yellow.",start:47000,end:49000},
+	{element:"p",text:"I came along,",start:50000,end:52000},
+	{element:"p",text:"I wrote a song for you,",start:53000,end:56500},
+	{element:"p",text:"And all the things you do,",start:58000,end:62000},
+	{element:"p",text:"And it was called 'Yellow'.",start:64000,end:66000},
+	{element:"p",text:"So then I took my turn,",start:69000,end:73000},
+	{element:"p",text:"Oh what a thing to have done,",start:75000,end:77000},
+	{element:"p",text:"And it was all yellow.",start:80500,end:83000},
+	{element:"p",text:"Your skin,",start:88000,end:90500},
+	{element:"p",text:"Oh yeah your skin and bones,",start:91000,end:93000},
+	{element:"p",text:"Turn into",start:94500,end:96000},
+	{element:"p",text:"Something beautiful,",start:97000,end:99000},
+	{element:"p",text:"Do you know,",start:100000,end:102000},
+	{element:"p",text:"You know I love you so,",start:102100,end:105000},
+	{element:"p",text:"You know I love you so.",start:107000,end:111000},
+	{element:"p",text:"I swam across,",start:132000,end:135000},
+	{element:"p",text:"I jumped across for you,",start:135500,end:139000},
+	{element:"p",text:"Oh what a thing to do.",start:141000,end:144000},
+	{element:"p",text:"Cause you were all yellow,",start:146500,end:149000},
+	{element:"p",text:"I drew a line,",start:149500,end:151000},
+	{element:"p",text:"I drew a line for you,",start:152000,end:156000},
+	{element:"p",text:"Oh what a thing to do,",start:157500,end:160000},
+	{element:"p",text:"And it was all yellow.",start:163500,end:166000},
+	{element:"p",text:"Your skin,",start:171000,end:173000},
+	{element:"p",text:"Oh yeah your skin and bones,",start:174000,end:176000},
+	{element:"p",text:"Turn into",start:177000,end:179500},
+	{element:"p",text:"Something beautiful,",start:180000,end:182000},
+	{element:"p",text:"Do you know,",start:182500,end:184500},
+	{element:"p",text:"For you I'd bleed myself dry,",start:185000,end:187000},
+	{element:"p",text:"For you I'd bleed myself dry.",start:190000,end:194000},
+	{element:"p",text:"It's true,",start:214000,end:217000},
+	{element:"p",text:"Look how they shine for you,",start:218000,end:220000},
+	{element:"p",text:"Look how they shine for you,",start:223000,end:227000},
+	{element:"p",text:"Look how they shine for,",start:229000,end:232000},
+	{element:"p",text:"Look how they shine for you,",start:234000,end:239000},
+	{element:"p",text:"Look how they shine for you,",start:240000,end:246000},
+	{element:"p",text:"Look how they shine.",start:247000,end:249000},
+	{element:"p",text:"Look at the stars,",start:249500,end:251000},
+	{element:"p",text:"Look how they shine for you,",start:251500,end:256000},
+	{element:"p",text:"And all the things that you do.",start:258000,end:260000},
+	{element:"p",text:"End",start:261000,end:263000}
+	]).onLayerEnd(function(){
+		this.activeElement.className+=" done";
 	})
-	typeBots.push(_console);
-	var tb = document.querySelectorAll(".tb");
-
-	for(var x=0;x<typeBots.length;x++){
-		(function(index){
-		    tb[index].onclick = function(){
-		        typeBots[index].start();
-		    }    
-		})(x);
+	var played = false;
+	document.querySelector("#audio").onplay = function(){
+		if(played){
+			lyric.start();
+		}else{
+			document.querySelector(".warn").className+= " opacity";
+			setTimeout(function(){document.querySelector(".warn").style.display="none";},500)
+			lyric.init();
+			played = true;
+		}
+	}
+	document.querySelector("#audio").onpause = function(){
+		lyric.pause();
 	}
 	</script>
 </body>
